@@ -3,8 +3,8 @@ package com.dylancolaco.popularmovies.client;
 import android.net.Uri;
 import android.util.Log;
 
-import com.dylancolaco.popularmovies.models.MoviesResponse;
 import com.dylancolaco.popularmovies.models.Movie;
+import com.dylancolaco.popularmovies.models.MoviesResponse;
 import com.dylancolaco.popularmovies.utils.JsonSerializer;
 
 import java.io.IOException;
@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,7 +19,7 @@ import java.util.Scanner;
  * Created by Dylan on 16/07/17.
  */
 
-public class TMDBHttpClientImpl implements TMDBHttpClient{
+public class TMDBHttpClientImpl implements TMDBHttpClient {
 
     private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
     //TODO: insert API Key
@@ -28,20 +27,20 @@ public class TMDBHttpClientImpl implements TMDBHttpClient{
 
     @Override
     public List<Movie> getMovies(SortType sortType) throws IOException {
-        URL requestUrl = createUrl(sortType);
+        URL requestUrl = createRequestUrl(sortType);
         String responseString = getResponseFromHttpUrl(requestUrl);
-        MoviesResponse response= JsonSerializer.deserialize(responseString, MoviesResponse.class);
+        MoviesResponse response = JsonSerializer.deserialize(responseString, MoviesResponse.class);
         return response.getResults();
     }
 
-    private URL createUrl(SortType sortType) {
-        String sortPath = getSortPath(sortType);
-        Uri uri = Uri.parse(BASE_URL).buildUpon()
-                .appendPath(sortPath)
+    private URL createRequestUrl(SortType sortType) {
+        String sortPathParameter = getSortPath(sortType);
+        Uri requestUri = Uri.parse(BASE_URL).buildUpon()
+                .appendPath(sortPathParameter)
                 .appendQueryParameter("api_key", API_KEY)
                 .build();
         try {
-            return new URL(uri.toString());
+            return new URL(requestUri.toString());
         } catch (MalformedURLException e) {
             Log.e(TMDBHttpClientImpl.class.getSimpleName(), e.getMessage());
             return null;

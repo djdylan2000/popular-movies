@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+    <string name="detail_activity_name">Movie Detail</string>
+    <string name="sort_popularity">Sort by Popularity</string>
+    <string name="sort_rating">Sort by Rating</string>
+    <string name="network_issue">Failed to load. Please refresh</string>
+    <string name="refresh">Refresh</string>
 </resources>
