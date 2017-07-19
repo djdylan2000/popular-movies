@@ -1,5 +1,6 @@
 package com.dylancolaco.popularmovies;
 
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,10 +18,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MoviesActivity extends AppCompatActivity {
 
+    @BindView(R.id.rv_movies_grid)
     RecyclerView recyclerView;
-    MenuItem sortOrderItem;
+
     TMDBHttpClient.SortType currentSortType = TMDBHttpClient.SortType.RATING;
 
     private final String TAG = getClass().getSimpleName();
@@ -29,15 +34,21 @@ public class MoviesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
-        recyclerView = (RecyclerView) findViewById(R.id.rv_movies_grid);
+        ButterKnife.bind(this);
         load(TMDBHttpClient.SortType.RATING);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        sortOrderItem = menu.findItem(R.id.sort_order);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem sortOrderItem = menu.findItem(R.id.sort_order);
+        sortOrderItem.setTitle(getNextSortMethod(currentSortType));
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -74,15 +85,26 @@ public class MoviesActivity extends AppCompatActivity {
                     Toast.makeText(MoviesActivity.this, R.string.network_issue, Toast.LENGTH_LONG).show();
                     return;
                 }
-                RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MoviesActivity.this, 2);
+                RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MoviesActivity.this, getNumberOfColumns());
                 MoviesAdapter moviesAdapter = new MoviesAdapter(movies, MoviesActivity.this);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setAdapter(moviesAdapter);
-                sortOrderItem.setTitle(getNextSortMethod(sortType));
+                invalidateOptionsMenu();
                 currentSortType = sortType;
             }
         }.execute();
+    }
+
+    private int getNumberOfColumns() {
+        int orientation = getResources().getConfiguration().orientation;
+        switch (orientation) {
+            case Configuration.ORIENTATION_PORTRAIT:
+                return 2;
+            case Configuration.ORIENTATION_LANDSCAPE:
+                return 4;
+        }
+        throw new IllegalArgumentException("invalid orientation: " + orientation);
     }
 
     private int getNextSortMethod(TMDBHttpClient.SortType sortType) {

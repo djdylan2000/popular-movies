@@ -14,6 +14,9 @@ import com.dylancolaco.popularmovies.utils.JsonSerializer;
 import com.dylancolaco.popularmovies.utils.TMDBImageUrlCreator;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Dylan on 18/07/17.
  */
@@ -24,26 +27,44 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private Movie movie;
 
+    @BindView(R.id.tv_title)
+    TextView titleView;
+
+    @BindView(R.id.tv_release_date)
+    TextView releaseDateView;
+
+    @BindView(R.id.tv_user_rating)
+    TextView userRatingView;
+
+    @BindView(R.id.tv_synopsis)
+    TextView synopsisView;
+
+    @BindView(R.id.iv_poster)
+    ImageView posterView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
+        ButterKnife.bind(this);
+
         movie = JsonSerializer.deserialize(getIntent().getStringExtra(MOVIE), Movie.class);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(R.string.detail_activity_name);
         }
+
         load();
     }
 
     private void load() {
-        ((TextView) findViewById(R.id.tv_title)).setText(movie.getTitle());
-        ((TextView) findViewById(R.id.tv_release_date)).setText(movie.getRelease_date());
-        ((TextView) findViewById(R.id.tv_user_rating)).setText(String.format("%.2f", movie.getVote_average()));
-        ((TextView) findViewById(R.id.tv_synopsis)).setText(movie.getOverview());
+        titleView.setText(movie.getTitle());
+        releaseDateView.setText(movie.getRelease_date());
+        userRatingView.setText(String.format("%.2f", movie.getVote_average()));
+        synopsisView.setText(movie.getOverview());
 
         String imageUrl = TMDBImageUrlCreator.create(movie.getPoster_path());
-        Picasso.with(this).load(imageUrl).into((ImageView) findViewById(R.id.iv_poster));
+        Picasso.with(this).load(imageUrl).into(posterView);
     }
 
     public static Intent createIntent(Context context, Movie movie) {

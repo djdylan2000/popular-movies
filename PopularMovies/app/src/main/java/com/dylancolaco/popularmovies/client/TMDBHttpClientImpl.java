@@ -58,7 +58,6 @@ public class TMDBHttpClientImpl implements TMDBHttpClient {
     }
 
     private static String getResponseFromHttpUrl(URL url) throws IOException {
-        Log.v("TEST", "url: " + url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             InputStream in = urlConnection.getInputStream();
